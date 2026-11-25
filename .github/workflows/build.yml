@@ -30,10 +30,17 @@ jobs:
     runs-on: ${{ inputs.os }}
     timeout-minutes: 120
     steps:
-      - name: Checkout
-        uses: actions/checkout@main
+      - name: Checkout FNF 0.7.5
+        uses: actions/checkout@v4
         with:
+          repository: FunkinCrew/Funkin
+          ref: v0.7.5
           submodules: recursive
+
+      - name: Give the Shaggy copy its own app ID
+        run: |
+          sed -i '' 's/"me\.funkin\.fnf"/"com.leocoffey.fnf075"/' project.hxp
+          grep -F 'PACKAGE_NAME:String = "com.leocoffey.fnf075"' project.hxp
 
       - name: Setup Haxe
         uses: krdlab/setup-haxe@master
