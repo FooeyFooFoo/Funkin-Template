@@ -90,9 +90,26 @@ jobs:
 
       - name: Install Libraries
         run: |
+          set -euo pipefail
+
+          revision="4e86b724ca43489a59ea465a46ffc12598e5df15"
+          lib_dir="$RUNNER_TEMP/FlxPartialSound"
+          mkdir -p "$lib_dir"
+
+          curl --fail --location --retry 3 \
+            "https://codeload.github.com/FunkinCrew/FlxPartialSound/tar.gz/$revision" \
+            --output "$RUNNER_TEMP/FlxPartialSound.tar.gz"
+          tar -xzf "$RUNNER_TEMP/FlxPartialSound.tar.gz" \
+            -C "$lib_dir" --strip-components=1
+
+          jq --arg path "$lib_dir" \
+            '(.dependencies[] | select(.name == "FlxPartialSound")) =
+             {name: "FlxPartialSound", type: "dev", path: $path}' \
+            hmm.json > hmm.updated.json
+          mv hmm.updated.json hmm.json
+
           haxelib install hmm --quiet
           haxelib run hmm install --quiet
-
       - name: List Installed Library Versions
         run: |
           echo "=== Full haxelib list ==="
